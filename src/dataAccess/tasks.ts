@@ -1,11 +1,15 @@
-import Task from "@/models/Task";
+"use server";
+
+import { Task } from "@/models/Task";
 import { dbConnection } from "./dbConnect";
 import { httpResponse } from "@/lib/utils";
+import { revalidatePath } from "next/cache";
 
 export async function createTask(title: string, points: number) {
   try {
     await dbConnection();
     await Task.create({ title: title, points: points });
+    revalidatePath("http://localhost:3000/home");
     return httpResponse({ status: 200 });
   } catch (error) {
     console.error("Error creating task", error);
@@ -15,10 +19,12 @@ export async function createTask(title: string, points: number) {
 
 export async function getTasks() {
   try {
-    console.log("getting tasks");
     await dbConnection();
-    const tasks = await Task.find({});
-    return httpResponse({ status: 200, data: tasks });
+    const tasks = await Task.find();
+    return httpResponse({
+      status: 200,
+      data: JSON.parse(JSON.stringify(tasks)),
+    });
   } catch (error) {
     console.error("Error fetching tasks", error);
     return httpResponse({ status: 500 });
