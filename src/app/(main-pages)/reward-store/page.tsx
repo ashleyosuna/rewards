@@ -15,7 +15,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "./../../components/ui/dialog";
+} from "@/components/ui/dialog";
 import CreateRewardForm from "@/components/CreateRewardForm";
 import { getRewards } from "@/dataAccess/rewards";
 
