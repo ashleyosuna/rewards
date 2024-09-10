@@ -43,7 +43,7 @@ export default async function Todos() {
             New Task
           </div>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="bg-[--background]">
           <DialogHeader>
             <DialogTitle>New Task</DialogTitle>
             <DialogDescription></DialogDescription>

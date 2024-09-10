@@ -32,6 +32,9 @@
     --green-color: #f3ffe1;
     --pink-color: #ffd3e8;
     --purple-color: #e8d7ff;
+    /* ffd7d5*/
+    --misty-rose: #ffd7d5;
+    --lighter-green: #f3ffe1;
   }
 
   .dark {
@@ -60,9 +63,7 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
@@ -74,3 +75,16 @@
     @apply text-2xl font-extrabold text-center;
   }
 }
+
+/* @layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  h1 {
+    @apply text-2xl font-extrabold text-center;
+  }
+} */

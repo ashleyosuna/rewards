@@ -1,3 +1,5 @@
+import { getHabits } from "@/dataAccess/habits";
+import CreateHabitForm from "./CreateHabitForm";
 import {
   Dialog,
   DialogContent,
@@ -6,8 +8,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { IHabit } from "@/models/Habit";
+import Habit from "./Habit";
 
-export default function Habits() {
+export default async function Habits() {
+  const habits = await getHabits();
+
   return (
     <div className="bg-[--green-color] flex flex-col justify-evenly gap-4 p-6 rounded-md border-4 border-[--pink-color] h-full">
       <div className="bg-[--pink-color] p-2">
@@ -22,20 +28,26 @@ export default function Habits() {
               <th className="">Points</th>
               <th></th>
             </tr>
+            {habits.map((habit: IHabit) => (
+              <tr key={habit._id}>
+                <Habit habit={habit} />
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
       <Dialog>
         <DialogTrigger>
           <div className="bg-[--pink-color] px-2 py-1 font-bold self-center border-2 rounded-lg border-[--purple-color] hover:scale-110 max-w-fit mx-auto">
-            New Task
+            New Habit
           </div>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className="bg-[--background]">
           <DialogHeader>
-            <DialogTitle>New Task</DialogTitle>
+            <DialogTitle>New Habit</DialogTitle>
             <DialogDescription></DialogDescription>
           </DialogHeader>
+          <CreateHabitForm />
         </DialogContent>
       </Dialog>
     </div>

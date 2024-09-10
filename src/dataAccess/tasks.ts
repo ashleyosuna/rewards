@@ -9,7 +9,7 @@ export async function createTask(title: string, points: number) {
   try {
     await dbConnection();
     await Task.create({ title: title, points: points });
-    revalidatePath("http://localhost:3000/home");
+    revalidatePath("/home");
     return httpResponse({ status: 200 });
   } catch (error) {
     console.error("Error creating task", error);
@@ -39,5 +39,15 @@ export async function toggleCompleteTask(taskId: string, completed: boolean) {
   } catch (error) {
     console.error("Error upading task", error);
     return httpResponse({ status: 500 });
+  }
+}
+
+export async function deleteTask(taskID: string) {
+  try {
+    await dbConnection();
+    await Task.deleteOne({ _id: taskID });
+    revalidatePath("/home");
+  } catch (error) {
+    console.error("Error deleting task", error);
   }
 }
