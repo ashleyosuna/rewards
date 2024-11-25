@@ -17,17 +17,41 @@ export default function Tasks() {
     new Array(DEFAULT_LINES).fill(0)
   );
 
-  const addTask = function (e) {
+  const addTask = function (e: any) {
     e.preventDefault();
-    console.log(e.target.description.value);
-    const newTask = {
-      description: e.target.description.value,
-      coins: e.target.coins.value,
-      completed: false,
-    };
-    setRemainingLines(new Array(DEFAULT_LINES).fill(0));
-    setTasks([...tasks, newTask]);
+    const description = e.target.description.value;
+    if (description.length) {
+      const newTask = {
+        description: description,
+        coins: e.target.coins.value ?? 0,
+        completed: false,
+      };
+      setRemainingLines(new Array(DEFAULT_LINES).fill(0));
+      setTasks([...tasks, newTask]);
+    }
     setShowInput(false);
+  };
+
+  const handleTaskChange = function (newDescription: string, index: number) {
+    if (newDescription.length) {
+      const newTasks = [];
+      for (let i = 0; i < tasks.length; i++)
+        if (i === index)
+          newTasks.push({ ...tasks[i], description: newDescription });
+        else newTasks.push(tasks[i]);
+      setTasks(newTasks);
+    } else {
+      const splicedTasks = tasks.toSpliced(index, 1);
+      setTasks(splicedTasks);
+    }
+  };
+
+  const handleTaskPriceChange = function (newPrice: string, index: number) {
+    const newTasks = [];
+    for (let i = 0; i < tasks.length; i++)
+      if (i === index) newTasks.push({ ...tasks[i], coins: Number(newPrice) });
+      else newTasks.push(tasks[i]);
+    setTasks(newTasks);
   };
 
   return (
@@ -41,8 +65,23 @@ export default function Tasks() {
             <Checkbox checked={task.completed} />
             <div className="border-b-2 border-[--title-border] w-full flex flex-col justify-end font-bold text-[--darker-orange]">
               <span className="flex">
-                <p className="grow">{task.description}</p>
-                <p>(${task.coins})</p>
+                <input
+                  type="text"
+                  className="grow bg-[--default-button-color] focus:outline-none"
+                  value={task.description}
+                  onChange={(e) => {
+                    handleTaskChange(e.target.value, i);
+                  }}
+                ></input>
+                <span>
+                  $
+                  <input
+                    type="number"
+                    className="bg-[--default-button-color] w-14 focus:outline-none"
+                    value={task.coins}
+                    onChange={(e) => handleTaskPriceChange(e.target.value, i)}
+                  ></input>
+                </span>
               </span>
             </div>
           </div>
@@ -65,9 +104,18 @@ export default function Tasks() {
             <span className="border-b-2 border-[--title-border] w-full">
               {i === 0 && showInput ? (
                 <form className="flex flex-row gap-4" onSubmit={addTask}>
-                  <input type="text" className="grow" name="description" />
+                  <input
+                    type="text"
+                    className="grow focus:outline-none"
+                    name="description"
+                  />
                   <span className="text-[--darker-orange] font-bold">
-                    $ <input type="number" className="w-14" name="coins" />
+                    ${" "}
+                    <input
+                      type="number"
+                      className="w-14 focus:outline-none"
+                      name="coins"
+                    />
                   </span>
                   <button
                     className="h-6 w-6 bg-[--title-border] text-white rounded-md font-bold relative"
