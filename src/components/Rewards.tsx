@@ -11,6 +11,7 @@ const testRewards = [
 
 export default function Rewards() {
   const [rewards, setRewards] = useState(testRewards);
+  const [newReward, setNewReward] = useState(false);
 
   const onRewardsChange = function (newReward: RewardType, index: number) {
     setRewards([
@@ -25,6 +26,12 @@ export default function Rewards() {
     setRewards(newArray);
   };
 
+  const onNewReward = function (newReward: RewardType) {
+    const newArray = [...rewards, newReward];
+    setRewards(newArray);
+    setNewReward(false);
+  };
+
   return (
     <div className="w-[95%] mx-auto grid sm:grid-cols-4 lg:grid-cols-5 gap-4 my-8">
       {rewards.map((reward, index) => (
@@ -35,6 +42,22 @@ export default function Rewards() {
           onRewardsDelete={onRewardsDelete}
         />
       ))}
+      {!newReward ? (
+        <div className="bg-[--default-btn-color] border-2 rounded-lg border-[--title-border] flex flex-col py-4 items-center justify-center">
+          <button
+            className="border rounded-[100%] border-[--darker-orange] bg-[--darker-orange] text-white font-bold py-2 px-4 text-xl"
+            onClick={() => setNewReward(true)}
+          >
+            +
+          </button>
+        </div>
+      ) : (
+        <Reward
+          reward={{ description: "", price: 0 }}
+          newReward={true}
+          onNewReward={onNewReward}
+        />
+      )}
     </div>
   );
 }

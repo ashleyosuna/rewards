@@ -7,9 +7,11 @@ import { useState } from "react";
 
 type RewardProps = {
   reward: RewardType;
-  index: number;
-  onRewardsChange: (arg0: RewardType, arg1: number) => void;
-  onRewardsDelete: (arg0: number) => void;
+  index?: number;
+  onRewardsChange?: (arg0: RewardType, arg1: number) => void;
+  onRewardsDelete?: (arg0: number) => void;
+  onNewReward?: (org0: RewardType) => void;
+  newReward?: boolean;
 };
 
 export default function Reward({
@@ -17,12 +19,16 @@ export default function Reward({
   index,
   onRewardsChange,
   onRewardsDelete,
+  onNewReward,
+  newReward,
 }: RewardProps) {
-  const [edit, setEdit] = useState(false);
+  const [edit, setEdit] = useState(newReward ?? false);
   const [thisReward, setThisReward] = useState(reward);
 
   const onRewardChange = function () {
-    onRewardsChange(thisReward, index);
+    if (!newReward && onRewardsChange && index != void 0)
+      onRewardsChange(thisReward, index);
+    else if (newReward && onNewReward) onNewReward(thisReward);
     setEdit(false);
   };
 
@@ -33,8 +39,9 @@ export default function Reward({
       <FontAwesomeIcon icon={faGift} className="sm:text-6xl text-4xl" />
       <input
         type="text"
-        className="w-full text-center font-bold text-[--darker-orange] mt-2 mb-[-4px] bg-inherit focus:outline-none"
-        value={thisReward.description}
+        className="w-full text-center font-bold text-[--darker-orange] mt-2 mb-[-4px] bg-inherit focus:outline-none placeholder:text-[--darker-orange] placeholder:opacity-60"
+        value={thisReward.description ?? ""}
+        placeholder={!thisReward.description ? "New Reward" : ""}
         disabled={!edit}
         onChange={(e) =>
           setThisReward({ ...thisReward, description: e.target.value })
@@ -44,8 +51,9 @@ export default function Reward({
         <p className="text-[--darker-orange] font-bold">$</p>
         <input
           type="number"
-          className="w-10 text-center font-bold text-[--darker-orange] mb-2 bg-inherit focus:outline-none"
-          value={thisReward.price}
+          className="w-10 text-center font-bold text-[--darker-orange] mb-2 bg-inherit focus:outline-none placeholder:text-[--darker-orange] placeholder:opacity-60"
+          value={thisReward.price != 0 ? thisReward.price : ""}
+          placeholder={!thisReward.price ? "0" : ""}
           disabled={!edit}
           onChange={(e) =>
             setThisReward({ ...thisReward, price: Number(e.target.value) })
@@ -69,7 +77,9 @@ export default function Reward({
         <button
           className="bg-[--darker-orange] border-2 rounded-lg w-full border-[--darker-orange] disabled:opacity-50"
           disabled={edit}
-          onClick={() => onRewardsDelete(index)}
+          onClick={() => {
+            if (onRewardsDelete && index != void 0) onRewardsDelete(index);
+          }}
         >
           <FontAwesomeIcon icon={faTrash} className="text-white text-xs" />
         </button>
