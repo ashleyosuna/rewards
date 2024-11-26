@@ -67,7 +67,7 @@ export default function Tasks() {
               <span className="flex">
                 <input
                   type="text"
-                  className="grow bg-[--default-button-color] focus:outline-none"
+                  className="grow bg-[--default-button-color] focus:outline-none px-1"
                   value={task.description}
                   onChange={(e) => {
                     handleTaskChange(e.target.value, i);
@@ -77,7 +77,7 @@ export default function Tasks() {
                   $
                   <input
                     type="number"
-                    className="bg-[--default-button-color] w-14 focus:outline-none"
+                    className="bg-[--default-button-color] w-14 focus:outline-none px-1"
                     value={task.coins}
                     onChange={(e) => handleTaskPriceChange(e.target.value, i)}
                   ></input>
@@ -106,14 +106,14 @@ export default function Tasks() {
                 <form className="flex flex-row gap-4" onSubmit={addTask}>
                   <input
                     type="text"
-                    className="grow focus:outline-none"
+                    className="grow focus:outline-none px-1 bg-[--default-btn-color] text-[--darker-orange] font-bold"
                     name="description"
                   />
                   <span className="text-[--darker-orange] font-bold">
                     ${" "}
                     <input
                       type="number"
-                      className="w-14 focus:outline-none"
+                      className="w-14 focus:outline-none px-1 bg-[--default-btn-color] text-[--darker-orange] font-bold"
                       name="coins"
                     />
                   </span>
