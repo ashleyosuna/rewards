@@ -35,8 +35,11 @@ export default function Reward({
   const onBuy = function () {};
 
   return (
-    <div className="bg-[--default-btn-color] border-2 rounded-lg border-[--title-border] flex flex-col py-4 items-center">
-      <FontAwesomeIcon icon={faGift} className="sm:text-6xl text-4xl" />
+    <div className="bg-[--default-btn-color] border-4 rounded-lg border-[--title-border] flex flex-col py-4 items-center min-h-56">
+      <FontAwesomeIcon
+        icon={faGift}
+        className="sm:text-6xl text-4xl text-[--darker-orange]"
+      />
       <input
         type="text"
         className="w-full text-center font-bold text-[--darker-orange] mt-2 mb-[-4px] bg-inherit focus:outline-none placeholder:text-[--darker-orange] placeholder:opacity-60"

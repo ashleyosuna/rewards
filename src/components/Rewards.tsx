@@ -7,6 +7,7 @@ import { RewardType } from "@/types";
 const testRewards = [
   { description: "Coffee", price: 8 },
   { description: "Watch a movie", price: 15 },
+  { description: "Read", price: 10 },
 ];
 
 export default function Rewards() {
@@ -33,7 +34,7 @@ export default function Rewards() {
   };
 
   return (
-    <div className="w-[95%] mx-auto grid sm:grid-cols-4 lg:grid-cols-5 gap-4 my-8">
+    <div className="w-[95%] mx-auto grid sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 my-8">
       {rewards.map((reward, index) => (
         <Reward
           reward={reward}
@@ -43,7 +44,7 @@ export default function Rewards() {
         />
       ))}
       {!newReward ? (
-        <div className="bg-[--default-btn-color] border-2 rounded-lg border-[--title-border] flex flex-col py-4 items-center justify-center">
+        <div className="bg-[--default-btn-color] border-4 rounded-lg border-[--title-border] flex flex-col py-4 items-center justify-center min-h-56">
           <button
             className="border rounded-[100%] border-[--darker-orange] bg-[--darker-orange] text-white font-bold py-2 px-4 text-xl"
             onClick={() => setNewReward(true)}
