@@ -4,7 +4,6 @@ import mongoose from "mongoose";
 
 export default async function connect() {
   const connectionString = process.env.MONGO_URI;
-  console.log(connectionString);
   if (!connectionString) {
     console.log("Connection string not defined");
     return;

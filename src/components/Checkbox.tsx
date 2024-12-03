@@ -1,6 +1,7 @@
 type CheckboxProps = {
   checked?: boolean;
   disabled?: boolean;
+  onChange?: Function;
 };
 
 export default function Checkbox(props: CheckboxProps) {
@@ -10,6 +11,9 @@ export default function Checkbox(props: CheckboxProps) {
         type="checkbox"
         defaultChecked={props.checked}
         disabled={props.disabled}
+        onChange={(e) => {
+          if (props.onChange) props.onChange(e.currentTarget.checked);
+        }}
         className="relative peer shrink-0 appearance-none h-6 w-6 border-2 border-[--title-border] rounded-sm bg-white checked:bg-[--title-border] disabled:opacity-35"
       />
       <svg

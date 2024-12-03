@@ -7,8 +7,7 @@ export default async function getUser() {
   try {
     await connect();
     const user = await User.findOne();
-    console.log(user);
-    return JSON.stringify(user);
+    return JSON.parse(JSON.stringify(user));
   } catch (error) {
     console.error("Error getting user data", error);
     return;

@@ -5,7 +5,10 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import TabsContext from "@/contexts/tabsContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import UserContext from "@/contexts/userContext";
+import getUser from "@/dataAccess/user";
+import { User } from "@/types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,15 +23,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const [currTab, setTab] = useState<"tasks" | "rewards">("tasks");
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const init = async function () {
+      try {
+        const user = await getUser();
+        setUser(user);
+      } catch (error) {
+        console.error("Error getting user information", error);
+      }
+    };
+    init();
+  }, []);
 
   return (
     <html lang="en">
-      <TabsContext.Provider value={{ currTab: currTab, setTab: setTab }}>
-        <body className={inter.className + "flex flex-row"}>
-          <Navbar />
-          {children}
-        </body>
-      </TabsContext.Provider>
+      <UserContext.Provider value={{ user: user }}>
+        <TabsContext.Provider value={{ currTab: currTab, setTab: setTab }}>
+          <body className={inter.className + "flex flex-row"}>
+            <Navbar />
+            {children}
+          </body>
+        </TabsContext.Provider>
+      </UserContext.Provider>
     </html>
   );
 }

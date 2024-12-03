@@ -1,10 +1,5 @@
-import { Dispatch, SetStateAction, createContext } from "react";
-
-export type User = {
-  name: String;
-  total: Number;
-  tasks: Object[];
-};
+import { User } from "@/types";
+import { createContext } from "react";
 
 type userContextType = {
   user: User | null;

@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Checkbox from "./Checkbox";
+import { TaskType } from "@/types";
+import { completeTask, createTask, getUserTasks } from "@/dataAccess/tasks";
+import UserContext from "@/contexts/userContext";
 
 const testTasks = [
   { description: "Go for a run", coins: 15, completed: false },
@@ -10,24 +13,42 @@ const testTasks = [
 
 export default function Tasks() {
   const DEFAULT_LINES = 15;
-
-  const [tasks, setTasks] = useState(testTasks);
+  const { user } = useContext(UserContext);
+  const [tasks, setTasks] = useState<TaskType[]>([]);
   const [showInput, setShowInput] = useState(false);
   const [remainingLines, setRemainingLines] = useState(
     new Array(DEFAULT_LINES).fill(0)
   );
 
-  const addTask = function (e: any) {
+  useEffect(() => {
+    const loadTasks = async function () {
+      try {
+        const tasks = await getUserTasks(user?._id);
+        setTasks(tasks);
+      } catch (error) {
+        console.error("Error fetching tasks", error);
+      }
+    };
+    loadTasks();
+  }, [user]);
+
+  const addTask = async function (e: any) {
     e.preventDefault();
     const description = e.target.description.value;
-    if (description.length) {
+    if (description.length && user?._id) {
       const newTask = {
         description: description,
-        coins: e.target.coins.value ?? 0,
+        price: e.target.coins.value ?? 0,
         completed: false,
+        user: user?._id,
       };
       setRemainingLines(new Array(DEFAULT_LINES).fill(0));
-      setTasks([...tasks, newTask]);
+      try {
+        const res = await createTask(newTask);
+        if (res.status === 200) setTasks([...tasks, newTask]);
+      } catch (error) {
+        console.error("Error creating task", error);
+      }
     }
     setShowInput(false);
   };
@@ -54,6 +75,19 @@ export default function Tasks() {
     setTasks(newTasks);
   };
 
+  const handleCompleteTask = async function (
+    index: number,
+    completed: boolean
+  ) {
+    try {
+      const task = tasks[index];
+      const res = await completeTask(task, completed);
+      if (res.status === 200) tasks[index].completed = completed;
+    } catch (error) {
+      console.error("Error updating task", error);
+    }
+  };
+
   return (
     <div className="w-[95%] sm:w-3/4 md:w-2/3 lg:1/2 mx-auto my-8 rounded-lg min-h-fit border-[--title-border] border-4">
       <div className="bg-[--title-background] py-2 font-bold text-xl border-b-4 border-[--title-border] text-center">
@@ -62,7 +96,10 @@ export default function Tasks() {
       <div className="pt-2 pb-4 px-4 bg-[--default-btn-color] h-full">
         {tasks.map((task, i) => (
           <div className="flex gap-4 h-8 align-bottom mb-2" key={`task${i}`}>
-            <Checkbox checked={task.completed} />
+            <Checkbox
+              checked={task.completed}
+              onChange={(checked: boolean) => handleCompleteTask(i, checked)}
+            />
             <div className="border-b-2 border-[--title-border] w-full flex flex-col justify-end font-bold text-[--darker-orange]">
               <span className="flex">
                 <input
@@ -78,7 +115,7 @@ export default function Tasks() {
                   <input
                     type="number"
                     className="bg-[--default-button-color] w-14 focus:outline-none px-1"
-                    value={task.coins}
+                    value={task.price}
                     onChange={(e) => handleTaskPriceChange(e.target.value, i)}
                   ></input>
                 </span>

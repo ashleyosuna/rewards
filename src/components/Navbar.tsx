@@ -1,6 +1,7 @@
 import TabsContext from "@/contexts/tabsContext";
 import { useContext } from "react";
 import Total from "./Total";
+import UserContext from "@/contexts/userContext";
 
 export default function Navbar() {
   const { currTab, setTab } = useContext(TabsContext);
