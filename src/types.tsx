@@ -1,8 +1,3 @@
-export type RewardType = {
-  description: string;
-  price: number;
-};
-
 export type TaskType = {
   _id?: string;
   description: string;
@@ -16,4 +11,11 @@ export type User = {
   username: string;
   total: number;
   tasks: string[];
+};
+
+export type RewardType = {
+  _id?: string;
+  description: string;
+  price: number;
+  user?: string;
 };

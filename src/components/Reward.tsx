@@ -26,9 +26,13 @@ export default function Reward({
   const [thisReward, setThisReward] = useState(reward);
 
   const onRewardChange = function () {
-    if (!newReward && onRewardsChange && index != void 0)
+    if (!newReward && onRewardsChange && index != void 0) {
       onRewardsChange(thisReward, index);
-    else if (newReward && onNewReward) onNewReward(thisReward);
+    } else if (newReward && onNewReward) {
+      onNewReward(thisReward);
+      // reset placeholder reward values
+      setThisReward({ description: "", price: 0 });
+    }
     setEdit(false);
   };
 
