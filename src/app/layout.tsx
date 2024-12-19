@@ -40,12 +40,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <UserContext.Provider value={{ user: user, setUser: setUser }}>
-        <TabsContext.Provider value={{ currTab: currTab, setTab: setTab }}>
-          <body className={inter.className + "flex flex-row"}>
-            <Navbar />
-            {children}
-          </body>
-        </TabsContext.Provider>
+        {/* <TabsContext.Provider value={{ currTab: currTab, setTab: setTab }}> */}
+        <body className={inter.className + "flex flex-row"}>
+          {/* <Navbar /> */}
+          {children}
+        </body>
+        {/* </TabsContext.Provider> */}
       </UserContext.Provider>
     </html>
   );
