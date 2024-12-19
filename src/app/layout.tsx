@@ -22,31 +22,31 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [currTab, setTab] = useState<"tasks" | "rewards">("tasks");
-  const [user, setUser] = useState<User | null>(null);
+  // const [currTab, setTab] = useState<"tasks" | "rewards">("tasks");
+  // const [user, setUser] = useState<User | null>(null);
 
-  useEffect(() => {
-    const init = async function () {
-      try {
-        const user = await getUser();
-        setUser(user);
-      } catch (error) {
-        console.error("Error getting user information", error);
-      }
-    };
-    init();
-  }, []);
+  // useEffect(() => {
+  //   const init = async function () {
+  //     try {
+  //       const user = await getUser();
+  //       setUser(user);
+  //     } catch (error) {
+  //       console.error("Error getting user information", error);
+  //     }
+  //   };
+  //   init();
+  // }, []);
 
   return (
     <html lang="en">
-      <UserContext.Provider value={{ user: user, setUser: setUser }}>
-        {/* <TabsContext.Provider value={{ currTab: currTab, setTab: setTab }}> */}
-        <body className={inter.className + "flex flex-row"}>
-          {/* <Navbar /> */}
-          {children}
-        </body>
-        {/* </TabsContext.Provider> */}
-      </UserContext.Provider>
+      {/* <UserContext.Provider value={{ user: user, setUser: setUser }}> */}
+      {/* <TabsContext.Provider value={{ currTab: currTab, setTab: setTab }}> */}
+      <body className={inter.className + "flex flex-row"}>
+        {/* <Navbar /> */}
+        {children}
+      </body>
+      {/* </TabsContext.Provider> */}
+      {/* </UserContext.Provider> */}
     </html>
   );
 }

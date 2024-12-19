@@ -19,3 +19,14 @@ export type RewardType = {
   price: number;
   user?: string;
 };
+
+export type AuthType = {
+  username: string;
+  password: string;
+  confirmPassword?: string;
+};
+
+export type SessionPayload = {
+  userId: string;
+  expiresAt: Date;
+};

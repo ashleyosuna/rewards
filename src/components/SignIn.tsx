@@ -1,19 +1,34 @@
 "use client";
-import { Dispatch, SetStateAction } from "react";
+import { login } from "@/dataAccess/auth";
+import { signInSchema } from "@/schemas";
+import { Dispatch, SetStateAction, useState } from "react";
 
 export default function SignIn({
   toRegister,
 }: {
   toRegister: Dispatch<SetStateAction<"signIn" | "register">>;
 }) {
+  const [errors, setErrors] = useState<string[]>([]);
+  const onSubmit = async function (e: React.ChangeEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const authData = Object.fromEntries(new FormData(e.currentTarget));
+    const parsedData = signInSchema.safeParse(authData);
+    if (parsedData.success) await login(parsedData.data);
+    else setErrors(parsedData.error.flatten().fieldErrors as string[]);
+  };
+
   return (
-    <form className="border-2 border-[--default-btn-color] rounded-lg bg-[--default-btn-color] p-6 flex flex-col gap-4 w-1/2">
+    <form
+      className="border-2 border-[--default-btn-color] rounded-lg bg-[--default-btn-color] p-6 flex flex-col gap-4 w-1/2"
+      onSubmit={onSubmit}
+    >
       <h1 className="font-bold text-lg">Sign In</h1>
       <div>
         <div className="font-bold">Username</div>
         <input
           type="text"
           className="w-full p-1 rounded-md bg-[--background]"
+          name="username"
         />
       </div>
       <div>
@@ -21,6 +36,7 @@ export default function SignIn({
         <input
           type="password"
           className="w-full p-1 rounded-md bg-[--background]"
+          name="password"
         />
       </div>
       <div className="text-sm">
