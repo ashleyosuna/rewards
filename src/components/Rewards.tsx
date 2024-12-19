@@ -36,12 +36,6 @@ export default function Rewards() {
   ) {
     try {
       const res = await updateReward(newReward);
-      if (res.status === 200)
-        setRewards([
-          ...rewards.slice(0, index),
-          newReward,
-          ...rewards.slice(index + 1, rewards.length),
-        ]);
     } catch (error) {
       console.error("Error updating reward", error);
     }

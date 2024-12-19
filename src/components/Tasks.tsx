@@ -3,8 +3,15 @@
 import { useContext, useEffect, useState } from "react";
 import Checkbox from "./Checkbox";
 import { TaskType } from "@/types";
-import { completeTask, createTask, getUserTasks } from "@/dataAccess/tasks";
+import {
+  completeTask,
+  createTask,
+  deleteTask,
+  getUserTasks,
+  updateTask,
+} from "@/dataAccess/tasks";
 import UserContext from "@/contexts/userContext";
+import { useDebouncedCallback } from "use-debounce";
 
 const testTasks = [
   { description: "Go for a run", coins: 15, completed: false },
@@ -13,7 +20,7 @@ const testTasks = [
 
 export default function Tasks() {
   const DEFAULT_LINES = 15;
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [tasks, setTasks] = useState<TaskType[]>([]);
   const [showInput, setShowInput] = useState(false);
   const [remainingLines, setRemainingLines] = useState(
@@ -45,7 +52,7 @@ export default function Tasks() {
       setRemainingLines(new Array(DEFAULT_LINES).fill(0));
       try {
         const res = await createTask(newTask);
-        if (res.status === 200) setTasks([...tasks, newTask]);
+        if (res.status === 200) setTasks([...tasks, res.data]);
       } catch (error) {
         console.error("Error creating task", error);
       }
@@ -53,27 +60,49 @@ export default function Tasks() {
     setShowInput(false);
   };
 
-  const handleTaskChange = function (newDescription: string, index: number) {
+  const handleTaskChange = useDebouncedCallback(async function (
+    newDescription: string,
+    index: number
+  ) {
     if (newDescription.length) {
-      const newTasks = [];
-      for (let i = 0; i < tasks.length; i++)
-        if (i === index)
-          newTasks.push({ ...tasks[i], description: newDescription });
-        else newTasks.push(tasks[i]);
-      setTasks(newTasks);
+      try {
+        const updatedTask: TaskType = {
+          ...tasks[index],
+          description: newDescription,
+        };
+        await updateTask(updatedTask);
+      } catch (error) {
+        console.error("Error updating task", error);
+      }
     } else {
-      const splicedTasks = tasks.toSpliced(index, 1);
-      setTasks(splicedTasks);
+      try {
+        const res = await deleteTask(tasks[index]._id);
+        if (res.status === 200) {
+          const splicedTasks = tasks.toSpliced(index, 1);
+          setTasks(splicedTasks);
+        }
+      } catch (error) {
+        console.error("Error deleting task", error);
+      }
     }
-  };
+  },
+  1000);
 
-  const handleTaskPriceChange = function (newPrice: string, index: number) {
-    const newTasks = [];
-    for (let i = 0; i < tasks.length; i++)
-      if (i === index) newTasks.push({ ...tasks[i], coins: Number(newPrice) });
-      else newTasks.push(tasks[i]);
-    setTasks(newTasks);
-  };
+  const handleTaskPriceChange = useDebouncedCallback(async function (
+    newPrice: string,
+    index: number
+  ) {
+    try {
+      const updatedTask: TaskType = {
+        ...tasks[index],
+        price: Number(newPrice),
+      };
+      await updateTask(updatedTask);
+    } catch (error) {
+      console.error("Error updating task", error);
+    }
+  },
+  1000);
 
   const handleCompleteTask = async function (
     index: number,
@@ -82,7 +111,15 @@ export default function Tasks() {
     try {
       const task = tasks[index];
       const res = await completeTask(task, completed);
-      if (res.status === 200) tasks[index].completed = completed;
+      if (res.status === 200 && user) {
+        tasks[index].completed = completed;
+        const updatedUser = {
+          ...user,
+          total:
+            user.total + (completed ? tasks[index].price : -tasks[index].price),
+        };
+        setUser(updatedUser);
+      }
     } catch (error) {
       console.error("Error updating task", error);
     }
@@ -105,7 +142,7 @@ export default function Tasks() {
                 <input
                   type="text"
                   className="grow bg-[--default-button-color] focus:outline-none px-1"
-                  value={task.description}
+                  defaultValue={task.description}
                   onChange={(e) => {
                     handleTaskChange(e.target.value, i);
                   }}
@@ -115,7 +152,7 @@ export default function Tasks() {
                   <input
                     type="number"
                     className="bg-[--default-button-color] w-14 focus:outline-none px-1"
-                    value={task.price}
+                    defaultValue={task.price}
                     onChange={(e) => handleTaskPriceChange(e.target.value, i)}
                   ></input>
                 </span>

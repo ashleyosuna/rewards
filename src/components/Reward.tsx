@@ -1,9 +1,11 @@
 "use client";
 
+import UserContext from "@/contexts/userContext";
+import { buyReward } from "@/dataAccess/reward";
 import { RewardType } from "@/types";
 import { faGift, faPencil, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 type RewardProps = {
   reward: RewardType;
@@ -24,6 +26,7 @@ export default function Reward({
 }: RewardProps) {
   const [edit, setEdit] = useState(newReward ?? false);
   const [thisReward, setThisReward] = useState(reward);
+  const { user, setUser } = useContext(UserContext);
 
   const onRewardChange = function () {
     if (!newReward && onRewardsChange && index != void 0) {
@@ -36,7 +39,17 @@ export default function Reward({
     setEdit(false);
   };
 
-  const onBuy = function () {};
+  const onBuy = async function () {
+    try {
+      const res = await buyReward(user?._id, reward.price);
+      if (res.status === 200 && user) {
+        const updatedUser = { ...user, total: user.total - reward.price };
+        setUser(updatedUser);
+      }
+    } catch (error) {
+      console.error("Error buying reward", error);
+    }
+  };
 
   return (
     <div className="bg-[--default-btn-color] border-4 rounded-lg border-[--title-border] flex flex-col py-4 items-center min-h-56">
@@ -47,7 +60,7 @@ export default function Reward({
       <input
         type="text"
         className="w-full text-center font-bold text-[--darker-orange] mt-2 mb-[-4px] bg-inherit focus:outline-none placeholder:text-[--darker-orange] placeholder:opacity-60"
-        value={thisReward.description ?? ""}
+        defaultValue={thisReward.description ?? ""}
         placeholder={!thisReward.description ? "New Reward" : ""}
         disabled={!edit}
         onChange={(e) =>
@@ -59,7 +72,7 @@ export default function Reward({
         <input
           type="number"
           className="w-10 text-center font-bold text-[--darker-orange] mb-2 bg-inherit focus:outline-none placeholder:text-[--darker-orange] placeholder:opacity-60"
-          value={thisReward.price != 0 ? thisReward.price : ""}
+          defaultValue={thisReward.price != 0 ? thisReward.price : ""}
           placeholder={!thisReward.price ? "0" : ""}
           disabled={!edit}
           onChange={(e) =>
@@ -68,7 +81,8 @@ export default function Reward({
         />
       </span>
       <button
-        className="border-2 rounded-lg border-[--darker-orange] bg-[--darker-orange] text-white font-bold w-28"
+        className="border-2 rounded-lg border-[--darker-orange] bg-[--darker-orange] text-white font-bold w-28 disabled:opacity-50"
+        disabled={!edit && (!user || user.total < reward.price)}
         onClick={edit ? onRewardChange : onBuy}
       >
         {edit ? "Save" : "Buy"}

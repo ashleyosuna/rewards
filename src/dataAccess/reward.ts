@@ -1,13 +1,14 @@
 "use server";
 
 import Reward from "@/models/Reward";
+import User from "@/models/User";
 import { RewardType } from "@/types";
 
 export async function fetchRewards(userId: string | undefined) {
   // bad request
   if (!userId) return { status: 400 };
   try {
-    const rewards = await Reward.find();
+    const rewards = await Reward.find().sort({ price: 1 });
     if (rewards.length)
       return { status: 200, data: JSON.parse(JSON.stringify(rewards)) };
     // not found
@@ -45,6 +46,19 @@ export async function deleteReward(rewardId: string | undefined) {
     return { status: 200 };
   } catch (error) {
     console.error("Error deleting reward", error);
+    return { status: 500 };
+  }
+}
+
+export async function buyReward(userId: string | undefined, price: number) {
+  if (!userId || !price) return { status: 400 };
+  try {
+    await User.updateOne({ _id: userId }, [
+      { $set: { total: { $subtract: ["$total", price] } } },
+    ]);
+    return { status: 200 };
+  } catch (error) {
+    console.error("Error buying reward", error);
     return { status: 500 };
   }
 }
